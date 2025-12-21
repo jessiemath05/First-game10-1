@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Jessie Math - 扇形</title>
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Fredoka:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --brand-primary:#2c3e50;
+      --brand-accent:#e67e22;
+      --brand-purple:#6c5ce7;
+      --icon-blue:#4285f4;
+      --bg-color:#f0f2f5;
+
+      --correct:#27ae60;
+      --wrong:#c0392b;
+
+      --line:#e5e7eb;
+      --shadow: 0 10px 26px rgba(2,8,23,.10);
+      --radius: 16px;
+    }
+
+    *{ box-sizing:border-box; }
+    html, body{
+      margin:0; padding:0; width:100%;
+      font-family:'Noto Sans TC', sans-serif;
+      background: var(--bg-color);
+      overflow-x:hidden;
+      user-select:none;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    header{
+      height:60px;
+      background:#fff;
+      padding:0 14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      z-index:100;
+      border-bottom: 1px solid var(--line);
+      position:sticky;
+      top:0;
+    }
+    .brand-group{
+      display:flex; align-items:center; gap:10px;
+      text-decoration:none;
+      min-width: 140px;
+    }
+    .avatar-circle{
+      width:42px; height:42px;
+      border-radius:50%;
+      border:3px solid var(--brand-accent);
+      overflow:hidden;
+      display:flex; justify-content:center; align-items:center;
+      background:#fff; flex-shrink:0;
+    }
+    .avatar-circle img{ width:100%; height:100%; object-fit:cover; }
+    .brand-text{
+      font-family:'Fredoka', system-ui, sans-serif;
+      font-size:20px;
+      color: var(--brand-primary);
+      letter-spacing:.4px;
+      font-weight:800;
+      white-space:nowrap;
+    }
+
+    .nav-group{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+    .nav-btn{
+      text-decoration:none;
+      color:#5f6368;
+      background:#fff;
+      border:1px solid #dadce0;
+      padding:7px 12px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:900;
+      display:flex; align-items:center; gap:6px;
+      transition:.2s;
+      white-space:nowrap;
+    }
+    .nav-btn i{ color: var(--icon-blue); }
+    .nav-btn:hover{ background:#f8f9fa; transform: translateY(-1px); }
+
+    .nav-btn-purple{
+      color: var(--brand-purple);
+      border: 1.5px solid var(--brand-purple);
+      background:#f8f7ff;
+    }
+    .nav-btn-purple i{ color: var(--brand-purple); }
+    .nav-btn-purple:hover{ background: var(--brand-purple); color:#fff; }
+    .nav-btn-purple:hover i{ color:#fff; }
+
+    @media (max-width: 600px){
+      .brand-text{ display:none; }
+      .nav-btn{ padding:6px 9px; }
+      .nav-btn span{ font-size:12px; }
+    }
+
+    #game-container{
+      min-height: calc(100vh - 60px);
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+      padding:10px;
+      width:100%;
+    }
+    .game-box{
+      width:100%;
+      max-width: 920px;
+      background:#fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .overlay{
+      position:absolute; inset:0;
+      background: rgba(255,255,255,0.98);
+      border-radius: var(--radius);
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      z-index:60;
+      text-align:center;
+      padding:20px;
+    }
+    .hidden{ display:none !important; }
+
+    h1{
+      color: var(--brand-primary);
+      font-size: 2.0rem;
+      margin: 0 0 10px;
+      line-height:1.2;
+      font-weight:900;
+    }
+    p{ color:#666; font-size:1rem; margin: 0 0 16px; font-weight:800; }
+
+    input[type="text"]{
+      padding:10px;
+      font-size:1.15rem;
+      border:3px solid #ddd;
+      border-radius:999px;
+      text-align:center;
+      width: 80%;
+      max-width: 260px;
+      margin: 10px 0 16px;
+      font-weight:900;
+      color: var(--brand-primary);
+      outline:none;
+    }
+    input[type="text"]:focus{ border-color: var(--brand-accent); }
+
+    .btn{
+      background: var(--brand-accent);
+      color:#fff;
+      border:none;
+      padding:11px 18px;
+      font-size:1.05rem;
+      border-radius:999px;
+      cursor:pointer;
+      box-shadow: 0 4px 0 #d35400;
+      transition:.12s;
+      font-weight:900;
+      margin: 8px;
+      width: 100%;
+      max-width: 360px;
+      display:inline-flex; justify-content:center; align-items:center; gap:8px;
+      white-space:nowrap;
+    }
+    .btn:active{ transform: translateY(4px); box-shadow:none; }
+    .btn-blue{ background: var(--brand-primary); box-shadow: 0 4px 0 #1a252f; }
+    .btn-green{ background: var(--correct); box-shadow: 0 4px 0 #1e8449; }
+    .btn-ghost{
+      background:#fff;
+      color:#5f6368;
+      border: 2px solid #dadce0;
+      box-shadow:none;
+    }
+    .btn-ghost i{ color: var(--icon-blue); }
+    .btn-purple{
+      background: var(--brand-purple);
+      box-shadow: 0 4px 0 #4b3fd4;
+    }
+    .btn-danger{
+      background: var(--wrong);
+      box-shadow: 0 4px 0 #8e2c24;
+    }
+
+    .level-grid{
+      width:100%;
+      max-width: 760px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+      margin-top: 6px;
+    }
+    .level-btn{
+      width:100%;
+      max-width: none;
+      margin:0;
+      padding:12px 14px;
+      border-radius: 16px;
+      justify-content:space-between;
+      text-align:left;
+      line-height:1.2;
+      box-shadow: 0 6px 16px rgba(2,8,23,.08);
+    }
+    .level-left{
+      display:flex; flex-direction:column; gap:4px;
+      align-items:flex-start;
+    }
+    .level-title{
+      font-weight:900;
+      font-size:1.05rem;
+      letter-spacing:.2px;
+    }
+    .level-sub{
+      font-weight:800;
+      font-size:.88rem;
+      opacity:.92;
+    }
+    .level-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.28);
+      font-size:.86rem;
+      font-weight:900;
+      white-space:nowrap;
+    }
+    .level-btn.btn-blue .level-chip{ background: rgba(255,255,255,.12); }
+
+    .diff-row{
+      display:flex; gap:10px; flex-wrap:wrap; justify-content:center;
+      margin-top: 12px;
+    }
+    .diff-row .btn{ max-width: 220px; margin:0; padding:10px 14px; font-size:1rem; }
+
+    @media (max-width: 600px){
+      h1{ font-size: 1.65rem; }
+      p{ font-size: .98rem; }
+      .level-btn{ padding:11px 12px; border-radius:14px; }
+      .level-title{ font-size: 1.0rem; }
+      .level-sub{ font-size: .86rem; }
+      .diff-row{ gap:8px; }
+      .diff-row .btn{ max-width: 48%; }
+    }
+
+    .top-card{
+      border:2px solid #eef2f7;
+      border-radius: 18px;
+      overflow:hidden;
+      background: linear-gradient(180deg, #ffffff 0%, rgba(108,92,231,.03) 100%);
+      margin-bottom: 10px;
+    }
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:8px 10px;
+      gap:10px;
+      background: rgba(248,250,252,.75);
+    }
+    .hud-left{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1.5px solid #e8edf5;
+      background:#fff;
+      font-weight:900;
+      font-size:.92rem;
+      color: var(--brand-primary);
+      white-space:nowrap;
+    }
+    .pill i{ color: var(--icon-blue); }
+    .pill .num{
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size:1.05rem;
+      font-weight:900;
+    }
+    #time-disp{ color:#e74c3c; }
+    #score-disp{ color:#f1c40f; }
+    #combo-disp{ color: var(--brand-purple); }
+
+    .combo-box{
+      background: linear-gradient(135deg, #FF9966, #FF5E62);
+      color:#fff;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: .95rem;
+      opacity:0;
+      transform: scale(.85);
+      transition: .22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 6px 14px rgba(255, 94, 98, 0.25);
+      white-space:nowrap;
+    }
+    .combo-active{ opacity:1; transform: scale(1); }
+
+    .pause-mini{
+      width:38px; height:38px;
+      border-radius:50%;
+      background:#fff;
+      border:2px solid #e8edf5;
+      color:#555;
+      font-size:1.05rem;
+      cursor:pointer;
+      display:flex; justify-content:center; align-items:center;
+      transition:.2s;
+      flex-shrink:0;
+    }
+    .pause-mini:hover{ background:#f3f6fb; color: var(--brand-primary); }
+
+    .urgent{ animation: pulse .55s infinite; }
+    @keyframes pulse{ 0%{opacity:1} 50%{opacity:.5} 100%{opacity:1} }
+
+    @media (max-width: 600px){
+      .topbar{ padding:7px 8px; }
+      .pill{ padding:5px 9px; font-size:.86rem; }
+      .pill .num{ font-size:1.0rem; }
+      .combo-box{ padding:6px 10px; font-size:.9rem; }
+    }
+
+    .question-card{
+      border: 2px solid #eef2f7;
+      border-radius: 16px;
+      padding: 12px 12px;
+      margin-bottom: 10px;
+      background: linear-gradient(180deg, #ffffff 0%, rgba(108,92,231,.04) 100%);
+    }
+    .q-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom: 8px;
+    }
+    .chips{ display:flex; gap:8px; flex-wrap:wrap; }
+    .chip{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      border: 2px solid #eef2f7;
+      background:#fff;
+      font-weight:900;
+      color: var(--brand-primary);
+      font-size: .9rem;
+      white-space:nowrap;
+    }
+    .chip.purple{ border-color: rgba(108,92,231,.28); background: rgba(108,92,231,.06); color: var(--brand-purple); }
+    .chip.accent{ border-color: rgba(230,126,34,.28); background: rgba(230,126,34,.06); color: var(--brand-accent); }
+    .chip.blue{ border-color: rgba(66,133,244,.28); background: rgba(66,133,244,.06); color: var(--icon-blue); }
+
+    .q-title{
+      font-size: 1.18rem;
+      font-weight: 900;
+      color: var(--brand-primary);
+      line-height:1.35;
+      margin: 0 0 6px;
+      text-align:left;
+    }
+    .q-objective{
+      font-size: 1.03rem;
+      font-weight: 900;
+      color: var(--brand-primary);
+      line-height: 1.45;
+      text-align:left;
+      margin:0;
+    }
+    .q-objective .hi{
+      color:#d81b60;
+      text-decoration: underline;
+      text-decoration-thickness: 3px;
+    }
+    .q-sub{
+      margin-top: 8px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .hint-text{
+      text-align:left;
+      color:#64748b;
+      font-weight:900;
+      min-height: 1.2em;
+      font-size: .98rem;
+      margin: 0;
+      flex: 1;
+    }
+    .mini-tip{
+      font-weight:900;
+      color:#6b7280;
+      font-size:.92rem;
+      white-space:nowrap;
+    }
+
+    .canvas-wrap{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding: 10px 0 6px;
+      border-radius: 16px;
+      background:#fff;
+      border: 2px solid #eef2f7;
+      margin-bottom: 10px;
+    }
+    canvas{
+      width: min(760px, 100%);
+      height:auto;
+      border-radius: 14px;
+      border: 2px solid #eef2f7;
+      box-shadow: 0 10px 22px rgba(0,0,0,.10);
+      background:#fff;
+      touch-action:none;
+    }
+
+    .action-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:center;
+      margin-top: 8px;
+    }
+    .action-row .btn{ margin:0; max-width: 360px; }
+
+    @media (max-width: 600px){
+      .game-box{ padding: 12px; }
+      .action-row .btn{ max-width:none; }
+    }
+
+    .rank-wrap{
+      width:100%;
+      max-width: 560px;
+      margin-top: 10px;
+      text-align:left;
+    }
+    .rank-title{
+      color: var(--brand-accent);
+      margin: 0 0 6px;
+      font-weight:900;
+    }
+    .rank-list{
+      width:100%;
+      border:2px solid #eef2f7;
+      border-radius: 12px;
+      overflow-y:auto;
+      max-height: 170px;
+      background:#fafafa;
+    }
+    .rank-item{
+      display:flex;
+      justify-content:space-between;
+      padding: 8px 12px;
+      border-bottom: 1px solid #eef2f7;
+      color: var(--brand-primary);
+      font-weight: 900;
+      font-size: .92rem;
+      gap: 10px;
+    }
+    .rank-item:last-child{ border-bottom:none; }
+    .startext{ letter-spacing: 1px; }
+  </style>
+</head>
+
+<body>
+  <header>
+    <a href="https://jessiemath0703-chu.github.io/website2/" class="brand-group">
+      <div class="avatar-circle">
+        <img src="JESSIEMATH-Q.png" alt="J" onerror="this.src='https://ui-avatars.com/api/?name=JM&background=e67e22&color=fff'">
+      </div>
+      <span class="brand-text">Jessie Math</span>
+    </a>
+
+    <div class="nav-group">
+      <a href="https://jessiemath0703-chu.github.io/website2/" class="nav-btn">
+        <i class="fa-solid fa-house"></i> <span>首頁</span>
+      </a>
+      <a href="https://jessiemath0703-chu.github.io/Game-Lobby/" class="nav-btn">
+        <i class="fa-solid fa-gamepad"></i> <span>遊戲大廳</span>
+      </a>
+      <a href="https://jessiemath0703-chu.github.io/Game-Lobby/#g5-u10" class="nav-btn nav-btn-purple">
+        <i class="fa-solid fa-undo"></i> <span>五年級扇形</span>
+      </a>
+    </div>
+  </header>
+
+  <div id="game-container">
+    <div class="game-box">
+
+      <div id="screen-start" class="overlay">
+        <div style="font-size:3.6rem; margin-bottom:10px;">🍕</div>
+        <h1>扇形三關整合</h1>
+        <p>先報上名來，等一下讓圓心角替你發光。</p>
+        <input type="text" id="player-name" placeholder="請輸入名字" maxlength="12">
+        <button class="btn" id="btn-next" type="button">下一步 <i class="fa-solid fa-arrow-right"></i></button>
+
+        <div class="rank-wrap">
+          <p class="rank-title"><i class="fa-solid fa-trophy"></i> 榮譽榜（依關卡×難度）</p>
+          <div class="rank-list" id="rank-content-start"></div>
+        </div>
+      </div>
+
+      <div id="screen-select" class="overlay hidden">
+        <h1>選擇關卡</h1>
+        <p>嗨，<span id="display-name" style="color:var(--brand-accent); font-weight:900;"></span>！挑一個宇宙入口。</p>
+
+        <div class="level-grid">
+          <button class="btn level-btn" data-level="1" type="button">
+            <div class="level-left">
+              <div class="level-title">Lv 1｜10-1 認識扇形</div>
+              <div class="level-sub">拖兩端，切出小／中／大扇形</div>
+            </div>
+            <span class="level-chip"><i class="fa-solid fa-chart-pie"></i> 直覺練功</span>
+          </button>
+
+          <button class="btn level-btn" data-level="2" type="button">
+            <div class="level-left">
+              <div class="level-title">Lv 2｜10-2 認識圓心角</div>
+              <div class="level-sub">命中角度／命中範圍／補角任務</div>
+            </div>
+            <span class="level-chip"><i class="fa-solid fa-compass-drafting"></i> 精準鎖定</span>
+          </button>
+
+          <button class="btn btn-blue level-btn" data-level="3" type="button">
+            <div class="level-left">
+              <div class="level-title">Lv 3｜10-3 幾分之幾圓</div>
+              <div class="level-sub">切出 p/q 圓（比例感覺開光）</div>
+            </div>
+            <span class="level-chip"><i class="fa-solid fa-wand-magic-sparkles"></i> 比例覺醒</span>
+          </button>
+        </div>
+
+        <div class="diff-row">
+          <button class="btn btn-ghost" data-diff="easy" type="button"><i class="fa-solid fa-feather"></i> 輕鬆</button>
+          <button class="btn btn-ghost" data-diff="normal" type="button"><i class="fa-solid fa-bolt"></i> 標準</button>
+          <button class="btn btn-ghost" data-diff="hard" type="button"><i class="fa-solid fa-fire"></i> 燃燒</button>
+        </div>
+
+        <p id="diff-desc" style="margin-top:12px; max-width:720px;">
+          目前：<b style="color:var(--brand-purple)">輕鬆</b>｜容錯 <b>±6°</b>｜角度吸附約 <b>2°</b> 一格。
+        </p>
+
+        <button class="btn btn-green" id="btn-start" type="button">
+          開始本局（60 秒） <i class="fa-solid fa-play"></i>
+        </button>
+      </div>
+
+      <div id="screen-pause" class="overlay hidden">
+        <h1>暫停中 ⏸️</h1>
+        <p>圓先別轉，我們先呼吸一下。</p>
+        <button class="btn btn-green" id="btn-resume" type="button">繼續遊戲</button>
+        <button class="btn" id="btn-restart" type="button">重新本關（分數歸零）</button>
+        <button class="btn btn-blue" id="btn-back" type="button">回關卡選單</button>
+      </div>
+
+      <div id="screen-end" class="overlay hidden">
+        <h1>時間到！🔔</h1>
+        <p>最終分數：<span id="final-score" style="font-size:2.5rem; color:var(--brand-accent); font-weight:900;">0</span></p>
+        <p style="margin-top:-6px;">
+          星等：<span id="final-stars" class="startext" style="font-size:1.4rem; font-weight:900;">☆☆☆</span>
+        </p>
+
+        <div class="rank-wrap">
+          <p class="rank-title"><i class="fa-solid fa-ranking-star"></i> 本關排行榜（前 10 名）</p>
+          <div class="rank-list" id="rank-content"></div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:10px; width:100%; align-items:center; margin-top:10px;">
+          <button class="btn" id="btn-play-again" type="button"><i class="fa-solid fa-rotate-right"></i> 再玩一次</button>
+          <button class="btn btn-blue" id="btn-back2" type="button"><i class="fa-solid fa-list"></i> 回選擇關卡</button>
+        </div>
+      </div>
+
+      <div class="top-card">
+        <div class="topbar">
+          <div class="hud-left">
+            <div class="pill"><i class="fa-solid fa-hourglass-half"></i> <span class="num" id="time-disp">60</span></div>
+            <div class="pill"><i class="fa-solid fa-star"></i> <span class="num" id="score-disp">0</span></div>
+            <div class="pill"><i class="fa-solid fa-fire"></i> <span class="num" id="combo-disp">0</span></div>
+            <div id="combo-box" class="combo-box">COMBO x3</div>
+          </div>
+
+          <button class="pause-mini hidden" id="btn-pause" type="button" title="暫停 / 繼續">
+            <i class="fa-solid fa-pause"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="question-card">
+        <div class="q-top">
+          <div>
+            <div class="q-title" id="q-title">題目載入中…</div>
+            <p class="q-objective" id="q-objective">—</p>
+          </div>
+          <div class="chips">
+            <span class="chip blue" id="chip-level"><i class="fa-solid fa-layer-group"></i> Lv 1</span>
+            <span class="chip purple" id="chip-diff"><i class="fa-solid fa-gauge-high"></i> 輕鬆</span>
+            <span class="chip accent" id="chip-rule"><i class="fa-solid fa-clock"></i> 對＋5 秒｜錯－5 秒</span>
+          </div>
+        </div>
+
+        <div class="q-sub">
+          <p class="hint-text" id="hint">準備開始…</p>
+          <div class="mini-tip" id="mini-tip">容錯：±6°</div>
+        </div>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="stage" width="760" height="520" aria-label="扇形互動畫布"></canvas>
+      </div>
+
+      <div class="action-row" id="action-row">
+        <button class="btn btn-purple" id="btn-submit" type="button"><i class="fa-solid fa-bolt"></i> 送出判定</button>
+        <button class="btn btn-ghost" id="btn-newq" type="button"><i class="fa-solid fa-forward"></i> 換一題</button>
+      </div>
+
+      <div class="action-row">
+        <button class="btn btn-danger" id="btn-restart-inline" type="button"><i class="fa-solid fa-rotate-right"></i> 重新</button>
+        <button class="btn btn-ghost" id="btn-back-inline" type="button"><i class="fa-solid fa-list"></i> 回選單</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+  (() => {
+    window.addEventListener('error', (e) => console.warn('JS Error:', e.message));
+
+    const $ = (s, el=document) => el.querySelector(s);
+    const $$ = (s, el=document) => [...el.querySelectorAll(s)];
+
+    const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+    const rad2deg = r => (r * 180 / Math.PI);
+    const deg2rad = d => (d * Math.PI / 180);
+    const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+    const nowISO = () => new Date().toISOString().slice(0,10);
+
+    const norm = a => {
+      a = a % (Math.PI*2);
+      if(a < 0) a += Math.PI*2;
+      return a;
+    };
+    const sweepCCW = (a1,a2) => {
+      a1 = norm(a1); a2 = norm(a2);
+      let s = a2 - a1;
+      if(s < 0) s += Math.PI*2;
+      return s;
+    };
+
+    const screenStart = $('#screen-start');
+    const screenSelect = $('#screen-select');
+    const screenPause = $('#screen-pause');
+    const screenEnd = $('#screen-end');
+
+    const playerNameInput = $('#player-name');
+    const btnNext = $('#btn-next');
+    const displayName = $('#display-name');
+
+    const btnStart = $('#btn-start');
+    const btnPause = $('#btn-pause');
+    const btnResume = $('#btn-resume');
+    const btnRestart = $('#btn-restart');
+    const btnBack = $('#btn-back');
+    const btnPlayAgain = $('#btn-play-again');
+    const btnBack2 = $('#btn-back2');
+
+    const timeDisp = $('#time-disp');
+    const scoreDisp = $('#score-disp');
+    const comboDisp = $('#combo-disp');
+    const comboBox = $('#combo-box');
+
+    const qTitle = $('#q-title');
+    const qObjective = $('#q-objective');
+    const hint = $('#hint');
+    const miniTip = $('#mini-tip');
+    const chipLevel = $('#chip-level');
+    const chipDiff = $('#chip-diff');
+    const diffDesc = $('#diff-desc');
+
+    const btnSubmit = $('#btn-submit');
+    const btnNewQ = $('#btn-newq');
+
+    const btnRestartInline = $('#btn-restart-inline');
+    const btnBackInline = $('#btn-back-inline');
+
+    const finalScore = $('#final-score');
+    const finalStars = $('#final-stars');
+
+    const rankStart = $('#rank-content-start');
+    const rankEnd = $('#rank-content');
+
+    const canvas = $('#stage');
+    const ctx = canvas.getContext('2d');
+
+    const STORE_KEY = 'JM_SECTOR_GAME_FRAME_V3_NO_SCENE';
+
+    const levelMeta = {
+      1: { name:"Lv 1｜10-1 認識扇形" },
+      2: { name:"Lv 2｜10-2 認識圓心角" },
+      3: { name:"Lv 3｜10-3 幾分之幾圓" },
+    };
+
+    const diffMeta = {
+      easy:   { name:"輕鬆", tol:6, snap:2, scoreBase:10 },
+      normal: { name:"標準", tol:3, snap:1, scoreBase:12 },
+      hard:   { name:"燃燒", tol:1, snap:1, scoreBase:14 },
+    };
+
+    function boardKey(level,diff){ return `L${level}_${diff}`; }
+    function loadStore(){
+      try{
+        const raw = localStorage.getItem(STORE_KEY);
+        if(!raw) return { boards:{} };
+        const obj = JSON.parse(raw);
+        if(!obj || typeof obj !== 'object') return { boards:{} };
+        if(!obj.boards) obj.boards = {};
+        return obj;
+      }catch(e){
+        return { boards:{} };
+      }
+    }
+    function saveStore(obj){ localStorage.setItem(STORE_KEY, JSON.stringify(obj)); }
+    function getBoard(level,diff){
+      const st = loadStore();
+      return st.boards[boardKey(level,diff)] || [];
+    }
+    function pushBoard(level,diff, entry){
+      const st = loadStore();
+      const k = boardKey(level,diff);
+      const arr = st.boards[k] || [];
+      arr.push(entry);
+      arr.sort((a,b)=> b.score - a.score);
+      st.boards[k] = arr.slice(0,10);
+      saveStore(st);
+    }
+
+    function starFor(level, diff, score){
+      const base = level === 1 ? 160 : level === 2 ? 190 : 210;
+      const dMul = diff === 'easy' ? 0.9 : diff === 'normal' ? 1.0 : 1.1;
+      const t1 = Math.round(base * dMul);
+      const t2 = Math.round(base * 1.35 * dMul);
+      const t3 = Math.round(base * 1.75 * dMul);
+      if(score >= t3) return 3;
+      if(score >= t2) return 2;
+      if(score >= t1) return 1;
+      return 0;
+    }
+
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, m => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+      }[m]));
+    }
+
+    function renderBoard(container, level, diff){
+      const arr = getBoard(level,diff);
+      container.innerHTML = '';
+      if(arr.length === 0){
+        container.innerHTML = `<div style="padding:15px; text-align:center; color:#94a3b8; font-weight:900;">暫無紀錄（第一名在等你）</div>`;
+        return;
+      }
+      arr.forEach((it, i) => {
+        let color = 'var(--brand-primary)';
+        if(i===0) color='#f39c12';
+        if(i===1) color='#7f8c8d';
+        if(i===2) color='#d35400';
+        const stars = '★'.repeat(it.stars) + '☆'.repeat(3-it.stars);
+        const row = document.createElement('div');
+        row.className = 'rank-item';
+        row.innerHTML = `<span style="color:${color}">#${i+1} ${escapeHtml(it.name)} <span style="opacity:.75;">(${stars})</span></span><span>${it.score}</span>`;
+        container.appendChild(row);
+      });
+    }
+
+    let playerName = '';
+    let currentLevel = 1;
+    let currentDiff = 'easy';
+
+    let running = false;
+    let paused = false;
+    let timeLeft = 60;
+    let score = 0;
+    let combo = 0;
+    let comboBest = 0;
+    let tickTimer = null;
+
+    const W = canvas.width, H = canvas.height;
+    const cx = W*0.5, cy = H*0.54;
+    const R = Math.min(W,H)*0.34;
+
+    let a1 = deg2rad(20);
+    let a2 = deg2rad(120);
+    let dragging = null;
+
+    let q = null;
+
+    function polarToXY(angle){ return { x: cx + Math.cos(angle)*R, y: cy + Math.sin(angle)*R }; }
+    function currentSweepDeg(){ return rad2deg(sweepCCW(a1,a2)); }
+
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0,0,W,H);
+
+      ctx.beginPath();
+      ctx.arc(cx,cy,R+14,0,Math.PI*2);
+      ctx.fillStyle = "rgba(44,62,80,.04)";
+      ctx.fill();
+
+      const s = sweepCCW(a1,a2);
+
+      ctx.beginPath();
+      ctx.moveTo(cx,cy);
+      ctx.arc(cx,cy,R,a1,a1+s,false);
+      ctx.closePath();
+      const grad = ctx.createRadialGradient(cx,cy,0,cx,cy,R);
+      grad.addColorStop(0, "rgba(230,126,34,.20)");
+      grad.addColorStop(1, "rgba(108,92,231,.18)");
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(cx,cy,R,0,Math.PI*2);
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "rgba(44,62,80,.18)";
+      ctx.stroke();
+
+      const p1 = polarToXY(a1);
+      const p2 = polarToXY(a2);
+
+      ctx.beginPath();
+      ctx.moveTo(cx,cy);
+      ctx.lineTo(p1.x,p1.y);
+      ctx.lineWidth = 7;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "rgba(66,133,244,.90)";
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(cx,cy);
+      ctx.lineTo(p2.x,p2.y);
+      ctx.lineWidth = 7;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "rgba(230,126,34,.92)";
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(cx,cy,7,0,Math.PI*2);
+      ctx.fillStyle = "rgba(108,92,231,.95)";
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(cx,cy,14,0,Math.PI*2);
+      ctx.strokeStyle = "rgba(108,92,231,.22)";
+      ctx.lineWidth = 6;
+      ctx.stroke();
+
+      const handleSize = 16;
+      const canDragH1 = (currentLevel === 1);
+
+      ctx.beginPath();
+      ctx.arc(p1.x,p1.y,handleSize,0,Math.PI*2);
+      ctx.fillStyle = canDragH1 ? "rgba(66,133,244,.95)" : "rgba(148,163,184,.90)";
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(p1.x,p1.y,handleSize+8,0,Math.PI*2);
+      ctx.strokeStyle = canDragH1 ? "rgba(66,133,244,.22)" : "rgba(148,163,184,.20)";
+      ctx.lineWidth = 8;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(p2.x,p2.y,handleSize,0,Math.PI*2);
+      ctx.fillStyle = "rgba(230,126,34,.96)";
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(p2.x,p2.y,handleSize+8,0,Math.PI*2);
+      ctx.strokeStyle = "rgba(230,126,34,.22)";
+      ctx.lineWidth = 8;
+      ctx.stroke();
+
+      const deg = Math.round(currentSweepDeg());
+      ctx.fillStyle = "rgba(44,62,80,.90)";
+      ctx.font = "900 22px 'Fredoka','Noto Sans TC',sans-serif";
+      ctx.fillText(`${deg}°`, cx - 26, cy + 10);
+
+      ctx.fillStyle = "rgba(100,116,139,.92)";
+      ctx.font = "900 13px 'Noto Sans TC',sans-serif";
+      let label = "圓心角";
+      if(currentLevel === 3 && q && q.p && q.q) label = `目標：${q.p}/${q.q} 圓`;
+      ctx.fillText(label, cx - 42, cy + 34);
+
+      ctx.beginPath();
+      ctx.arc(cx,cy, 50, a1, a1 + s, false);
+      ctx.lineWidth = 9;
+      ctx.strokeStyle = "rgba(241,196,15,.78)";
+      ctx.lineCap = "round";
+      ctx.stroke();
+    }
+
+    function pointerPos(evt){
+      const rect = canvas.getBoundingClientRect();
+      const x = (evt.clientX - rect.left) * (canvas.width / rect.width);
+      const y = (evt.clientY - rect.top)  * (canvas.height / rect.height);
+      return {x,y};
+    }
+    function angleFromCenter(x,y){ return Math.atan2(y-cy, x-cx); }
+    function dist2(x1,y1,x2,y2){ return (x1-x2)**2 + (y1-y2)**2; }
+
+    function hitHandle(x,y){
+      const p1 = polarToXY(a1);
+      const p2 = polarToXY(a2);
+      const r = 28;
+
+      const canDragH1 = (currentLevel === 1);
+      if(canDragH1 && dist2(x,y,p1.x,p1.y) <= r*r) return "h1";
+      if(dist2(x,y,p2.x,p2.y) <= r*r) return "h2";
+      return null;
+    }
+
+    function setAngle(which, ang){
+      const snap = diffMeta[currentDiff].snap;
+      let d = rad2deg(ang);
+      d = Math.round(d / snap) * snap;
+      ang = deg2rad(d);
+
+      if(which === 'h1') a1 = ang;
+      else a2 = ang;
+
+      draw();
+
+      if(running && q){
+        const cur = Math.round(currentSweepDeg());
+        qTitle.innerHTML = `${levelMeta[currentLevel].name}｜目前：<span class="hi">${cur}°</span>`;
+      }
+    }
+
+    canvas.addEventListener('pointerdown', (evt) => {
+      if(!running || paused) return;
+      canvas.setPointerCapture(evt.pointerId);
+      const {x,y} = pointerPos(evt);
+      const h = hitHandle(x,y);
+      if(h){
+        dragging = h;
+      }else{
+        const ang = angleFromCenter(x,y);
+        const d = Math.hypot(x-cx, y-cy);
+        if(Math.abs(d - R) < 40){
+          dragging = "h2";
+          setAngle("h2", ang);
+        }
+      }
+    });
+    canvas.addEventListener('pointermove', (evt) => {
+      if(!running || paused || !dragging) return;
+      const {x,y} = pointerPos(evt);
+      setAngle(dragging, angleFromCenter(x,y));
+    });
+    canvas.addEventListener('pointerup', (evt) => {
+      dragging = null;
+      try{ canvas.releasePointerCapture(evt.pointerId); }catch(e){}
+    });
+    canvas.addEventListener('pointercancel', ()=> dragging=null);
+
+    function resetAnglesForLevel(level){
+      if(level === 1){ a1 = deg2rad(20); a2 = deg2rad(120); }
+      else { a1 = deg2rad(0); a2 = deg2rad(120); }
+    }
+
+    // ✅ 需求：有答案就不要顯示（括弧內容全部移除）
+    function genDragQuestion(level){
+      const dm = diffMeta[currentDiff];
+
+      if(level === 1){
+        const kind = pick([
+          {name:"小扇形", min:20,  max:60,  hint:"小到像偷吃一口，也算很有禮貌"},
+          {name:"中扇形", min:90,  max:150, hint:"剛好像認真切披薩那刀"},
+          {name:"大扇形", min:200, max:300, hint:"豪爽到像主揪直接包場"}
+        ]);
+        return {
+          type:"drag",
+          objective:`把圓切成 <span class="hi">${kind.name}</span>`,
+          min: kind.min, max: kind.max, tol: dm.tol,
+          hint: kind.hint
+        };
+      }
+
+      if(level === 2){
+        const mode = pick(["hit","range","complement"]);
+        const pool = [15,20,25,30,35,40,45,50,55,60,70,75,80,90,100,110,120,135,150,160,180,200,210,225,240,270,300,315,330,340];
+        const target = pick(pool);
+
+        if(mode === "hit"){
+          return {
+            type:"drag",
+            objective:`命中 <span class="hi">${target}°</span>`,
+            target, tol: dm.tol, mode:"hit",
+            hint:"把它想成「指針停在指定刻度」"
+          };
+        }
+        if(mode === "range"){
+          const w = pick([10,12,15,18,20]);
+          let lo = clamp(target - w, 5, 355);
+          let hi = clamp(target + w, 5, 355);
+          if(lo > hi) [lo,hi]=[hi,lo];
+          return {
+            type:"drag",
+            objective:`切到 <span class="hi">${lo}°～${hi}°</span>`,
+            min:lo, max:hi, tol: dm.tol, mode:"range",
+            hint:"不用完美命中，進到範圍就算你贏"
+          };
+        }
+        const need = pick([30,45,60,75,90,120,150,180,210,240,270]);
+        const t = 360 - need;
+        return {
+          type:"drag",
+          objective:`補角任務：還差 <span class="hi">${need}°</span>`,
+          target:t, tol: dm.tol, mode:"complement",
+          hint:"整圈 360°，缺口就是答案"
+        };
+      }
+
+      const fracs = [[1,2],[1,3],[2,3],[1,4],[3,4],[1,5],[2,5],[3,5],[4,5],[1,6],[5,6]];
+      const [p,qv] = pick(fracs);
+      const target = 360*(p/qv);
+      return {
+        type:"drag",
+        objective:`切出 <span class="hi">${p}/${qv}</span> 圓`,
+        p, q:qv, target, tol: dm.tol,
+        hint:"把圓當作 1：先分母、再分子"
+      };
+    }
+
+    function nextQuestion(){
+      if(!running) return;
+      resetAnglesForLevel(currentLevel);
+      q = genDragQuestion(currentLevel);
+
+      const cur = Math.round(currentSweepDeg());
+      qTitle.innerHTML = `${levelMeta[currentLevel].name}｜目前：<span class="hi">${cur}°</span>`;
+      qObjective.innerHTML = `目標：${q.objective}`;
+      hint.style.color = "#64748b";
+      hint.textContent = q.hint || '拖拉端點後送出判定';
+      miniTip.textContent = `容錯：±${diffMeta[currentDiff].tol}°`;
+
+      draw();
+    }
+
+    function addTime(sec){
+      timeLeft = clamp(timeLeft + sec, 0, 99);
+      timeDisp.textContent = timeLeft;
+    }
+    function comboMul(){
+      if(combo >= 9) return 1.6;
+      if(combo >= 6) return 1.4;
+      if(combo >= 3) return 1.2;
+      return 1.0;
+    }
+    function scoreAdd(base){ return Math.round(base * comboMul()); }
+
+    function updateComboUI(){
+      comboDisp.textContent = combo;
+      if(combo >= 3){
+        comboBox.textContent = `COMBO x${combo}`;
+        comboBox.classList.add('combo-active');
+      }else{
+        comboBox.classList.remove('combo-active');
+      }
+    }
+
+    function syncHUD(){
+      timeDisp.textContent = timeLeft;
+      scoreDisp.textContent = score;
+      updateComboUI();
+      timeDisp.classList.toggle('urgent', timeLeft <= 10);
+    }
+
+    function submitDrag(){
+      if(!running || paused || !q) return;
+
+      const dm = diffMeta[currentDiff];
+      const deg = currentSweepDeg();
+
+      let ok = false;
+      let msg = "";
+
+      if(currentLevel === 1){
+        ok = (deg >= q.min - dm.tol && deg <= q.max + dm.tol);
+        msg = ok
+          ? `✅ 命中！你切到 ${Math.round(deg)}°，剛好在範圍內。`
+          : `❌ 目前 ${Math.round(deg)}°，要落在 ${q.min}°～${q.max}°。`;
+      }else if(currentLevel === 2){
+        if(q.mode === 'range'){
+          ok = (deg >= q.min - dm.tol && deg <= q.max + dm.tol);
+          msg = ok
+            ? `✅ 命中！現在 ${Math.round(deg)}°，穩穩送進範圍。`
+            : `❌ 目前 ${Math.round(deg)}°，要在 ${q.min}°～${q.max}°。`;
+        }else{
+          const diff = Math.abs(deg - q.target);
+          ok = diff <= dm.tol;
+          msg = ok
+            ? `✅ 命中！現在 ${Math.round(deg)}°。`
+            : `❌ 差一點：現在 ${Math.round(deg)}°（差 ${Math.round(diff)}°）。`;
+        }
+      }else{
+        const diff = Math.abs(deg - q.target);
+        ok = diff <= dm.tol;
+        msg = ok
+          ? `✅ 命中！現在約 ${Math.round(deg)}°，就是 ${q.p}/${q.q} 圓的節奏。`
+          : `❌ 目前約 ${Math.round(deg)}°，差 ${Math.round(diff)}°。`;
+      }
+
+      if(ok){
+        combo++;
+        addTime(+5);
+        const gain = scoreAdd(dm.scoreBase + (currentLevel-1)*2);
+        score += gain;
+        hint.style.color = "var(--correct)";
+        hint.textContent = `${msg}（＋5 秒｜＋${gain} 分｜倍率 ${comboMul()}x）`;
+      }else{
+        combo = 0;
+        addTime(-5);
+        hint.style.color = "var(--wrong)";
+        hint.textContent = `${msg}（－5 秒｜連擊歸零）`;
+      }
+
+      syncHUD();
+      setTimeout(nextQuestion, 650);
+    }
+
+    function showScreen(id){
+      [screenStart, screenSelect, screenPause, screenEnd].forEach(el => el.classList.add('hidden'));
+      if(id) $(id).classList.remove('hidden');
+    }
+
+    function setDiff(diff){
+      currentDiff = diff;
+      const m = diffMeta[diff];
+      chipDiff.innerHTML = `<i class="fa-solid fa-gauge-high"></i> ${m.name}`;
+      diffDesc.innerHTML = `目前：<b style="color:var(--brand-purple)">${m.name}</b>｜容錯 <b>±${m.tol}°</b>｜角度吸附約 <b>${m.snap}°</b> 一格。`;
+
+      renderBoard(rankStart, currentLevel, currentDiff);
+      renderBoard(rankEnd, currentLevel, currentDiff);
+
+      $$('#screen-select [data-diff]').forEach(b=>{
+        const on = b.dataset.diff === diff;
+        b.style.borderColor = on ? "rgba(108,92,231,.35)" : "#dadce0";
+        b.style.background = on ? "rgba(108,92,231,.06)" : "#fff";
+        b.style.color = on ? "var(--brand-purple)" : "#5f6368";
+      });
+    }
+
+    function setLevel(level){
+      currentLevel = level;
+      chipLevel.innerHTML = `<i class="fa-solid fa-layer-group"></i> Lv ${level}`;
+
+      $$('#screen-select [data-level]').forEach((b) => {
+        const on = Number(b.dataset.level) === level;
+        b.style.filter = on ? "brightness(1.03)" : "none";
+        b.style.transform = on ? "translateY(-1px)" : "none";
+      });
+
+      renderBoard(rankStart, currentLevel, currentDiff);
+      renderBoard(rankEnd, currentLevel, currentDiff);
+    }
+
+    function startRound(){
+      running = true;
+      paused = false;
+      timeLeft = 60;
+      score = 0;
+      combo = 0;
+      comboBest = 0;
+
+      btnPause.classList.remove('hidden');
+      btnPause.innerHTML = '<i class="fa-solid fa-pause"></i>';
+
+      hint.style.color = "#64748b";
+      syncHUD();
+
+      if(tickTimer) clearInterval(tickTimer);
+      tickTimer = setInterval(() => {
+        if(!running || paused) return;
+        timeLeft -= 1;
+        if(timeLeft <= 0){
+          timeLeft = 0;
+          syncHUD();
+          endRound();
+        }else{
+          syncHUD();
+        }
+      }, 1000);
+
+      resetAnglesForLevel(currentLevel);
+      nextQuestion();
+    }
+
+    function endRound(){
+      running = false;
+      paused = false;
+      if(tickTimer) clearInterval(tickTimer);
+      tickTimer = null;
+
+      btnPause.classList.add('hidden');
+
+      const stars = starFor(currentLevel, currentDiff, score);
+      const starText = '★'.repeat(stars) + '☆'.repeat(3-stars);
+
+      finalScore.textContent = score;
+      finalStars.textContent = starText;
+
+      pushBoard(currentLevel, currentDiff, { name: playerName, score, stars, date: nowISO() });
+      renderBoard(rankEnd, currentLevel, currentDiff);
+      renderBoard(rankStart, currentLevel, currentDiff);
+
+      showScreen('#screen-end');
+    }
+
+    function togglePause(){
+      if(!running) return;
+      paused = !paused;
+      showScreen(paused ? '#screen-pause' : null);
+      btnPause.innerHTML = paused
+        ? '<i class="fa-solid fa-play"></i>'
+        : '<i class="fa-solid fa-pause"></i>';
+    }
+
+    function restartRound(){
+      showScreen(null);
+      startRound();
+    }
+
+    function backToSelect(){
+      running = false;
+      paused = false;
+      if(tickTimer) clearInterval(tickTimer);
+      tickTimer = null;
+      btnPause.classList.add('hidden');
+      showScreen('#screen-select');
+    }
+
+    btnNext.addEventListener('click', () => {
+      const name = playerNameInput.value.trim();
+      if(!name){ alert('請輸入名字！'); return; }
+      playerName = name;
+      displayName.textContent = name;
+
+      showScreen('#screen-select');
+      renderBoard(rankStart, currentLevel, currentDiff);
+    });
+
+    $$('#screen-select [data-level]').forEach(b=>{
+      b.addEventListener('click', ()=> setLevel(Number(b.dataset.level)));
+    });
+    $$('#screen-select [data-diff]').forEach(b=>{
+      b.addEventListener('click', ()=> setDiff(b.dataset.diff));
+    });
+
+    btnStart.addEventListener('click', () => { showScreen(null); startRound(); });
+
+    btnPause.addEventListener('click', togglePause);
+    btnResume.addEventListener('click', () => { showScreen(null); togglePause(); });
+    btnRestart.addEventListener('click', restartRound);
+    btnBack.addEventListener('click', backToSelect);
+
+    btnPlayAgain.addEventListener('click', () => { showScreen(null); startRound(); });
+    btnBack2.addEventListener('click', backToSelect);
+
+    btnSubmit.addEventListener('click', submitDrag);
+    btnNewQ.addEventListener('click', () => { if(running && !paused) nextQuestion(); });
+
+    btnRestartInline.addEventListener('click', () => {
+      if(!running){ showScreen(null); startRound(); }
+      else restartRound();
+    });
+    btnBackInline.addEventListener('click', backToSelect);
+
+    window.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter' && running && !paused) submitDrag();
+      if(e.key === ' ' && running){
+        e.preventDefault();
+        togglePause();
+      }
+      if(e.key === 'Escape'){
+        if(!screenPause.classList.contains('hidden')) togglePause();
+      }
+    });
+
+    setLevel(1);
+    setDiff('easy');
+    resetAnglesForLevel(1);
+    draw();
+    renderBoard(rankStart, currentLevel, currentDiff);
+  })();
+  </script>
+</body>
+</html>
+
+
+
