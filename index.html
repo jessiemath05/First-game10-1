@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jessie Math - 扇形角度與幾分之幾</title> 
+
+  <!-- ✅ 快取連結預覽（請放在 <head> 裡） -->
+  <meta name="description" content="© 2025–2026 Jessie Math 捷析老師. All rights reserved.">
+  <!-- ✅ LINE / FB 預覽用 -->
+  <meta property="og:title" content="Jessie Math - 扇形角度與幾分之幾">
+  <meta property="og:description" content="© 2025–2026 Jessie Math 捷析老師. All rights reserved.">
+  <meta property="og:type" content="website">
+
+  <!-- ✅ 預覽圖片 -->
+  <meta property="og:image" content="g5-u10-1.png">
+  <meta property="og:image:width" content="1024">
+  <meta property="og:image:height" content="1536">
+  <meta property="og:image:alt" content="Jessie Math 遊戲封面">
+
+  <!-- ✅ 有些平台會參考 -->
+  <link rel="image_src" href="g5-u10-1.png">
+
+  <!-- ✅ Twitter / X（可用同一張圖） -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Jessie Math - 扇形角度與幾分之幾">
+  <meta name="twitter:description" content="© 2025–2026 Jessie Math 捷析老師. All rights reserved.">
+  <meta name="twitter:image" content="g5-u10-1.png">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- KaTeX（保留：未來你要用到分數/角度排版可直接用） -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; padding:0; background:#f4f4f9; color:#333; }
+    .container { max-width:1200px; margin:0 auto; padding:0 15px; }
+    button, .btn { padding:10px 20px; margin:5px; border:none; border-radius:8px; cursor:pointer; font-weight:bold; transition:background-color .3s, transform .1s; }
+    button:hover, .btn:hover { opacity:.9; transform: translateY(-2px); }
+    .btn-primary { background:#4CAF50; color:#fff; }
+    .btn-secondary { background:#007bff; color:#fff; }
+    .btn-back { background:#f44336; color:#fff; }
+
+    .header { background:#fff; box-shadow:0 2px 4px rgba(0,0,0,.1); padding:10px 0; }
+    .navbar { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+    .logo-area { display:flex; align-items:center; flex-grow:1; min-width:240px; }
+    .logo-area img { width:40px; height:40px; border-radius:50%; margin-right:10px; background:transparent; flex:0 0 auto; }
+    .logo-area h1 { font-size:1.5em; color:#ff9800; margin:0; white-space:nowrap; }
+
+    .nav-links { display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+    .nav-link { text-decoration:none; color:#333; background:#eee; padding:8px 15px; border-radius:5px; display:flex; align-items:center; font-size:.9em; white-space:nowrap; gap:8px; }
+    .nav-link.back-button { background:#e0f7fa; border:1px solid #00bcd4; color:#00bcd4; font-weight:bold; }
+
+    @media (max-width:768px){
+      .navbar { flex-direction:column; align-items:stretch; gap:10px; }
+      .logo-area { margin-bottom:5px; justify-content:center; }
+      .nav-links { width:100%; justify-content:space-around; gap:8px; }
+      .nav-link { flex:1 1 30%; justify-content:center; padding:8px 10px; font-size:.85em; }
+      .logo-area h1 { font-size:1.3em; }
+    }
+
+    /* ✅ RWD：手機/平板/電腦比例優化（不動功能，只加排版保險） */
+    .game-area { padding:20px; min-height:80vh; display:flex; flex-direction:column; align-items:center; text-align:center; }
+    .view { width:100%; max-width:700px; margin-top:20px; padding:20px; background:#fff; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,.1); display:none; }
+    .view.active { display:block; }
+
+    #start-view h2 { color:#ff9800; }
+    #start-view input { padding:10px; margin:10px 0; border:1px solid #ccc; border-radius:5px; width:80%; max-width:360px; }
+
+    .level-card { background:#fff3e0; padding:15px; margin:10px 0; border-radius:8px; cursor:pointer; border-left:5px solid #ffc107; text-align:left; }
+    .level-card:hover { background:#ffe0b2; }
+    .level-card h3 { color:#f57c00; margin-top:0; }
+
+    .game-info { display:flex; justify-content:space-around; margin-bottom:20px; font-size:1.2em; font-weight:bold; gap:10px; flex-wrap:wrap; }
+    #timer { color:#f44336; } #score { color:#4CAF50; } #combo { color:#007bff; }
+
+    .question-area { min-height:150px; margin-bottom:20px; font-size:1.8em; border:2px dashed #ccc; padding:20px; border-radius:10px; overflow-wrap:anywhere; word-break:break-word; }
+    .answer-buttons { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
+    .answer-buttons button { width:calc(50% - 10px); background:#64b5f6; color:#fff; margin:0; min-height:48px; }
+
+    .control-buttons { margin-top:30px; border-top:1px solid #eee; padding-top:15px; display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
+    .control-buttons button { margin:0; }
+
+    #pause-overlay { position:fixed; inset:0; background:rgba(0,0,0,.7); color:#fff; display:none; flex-direction:column; justify-content:center; align-items:center; z-index:1000; padding:20px; text-align:center; }
+    #pause-overlay h2 { font-size:3em; margin-bottom:20px; }
+
+    #leaderboard-view h2 { color:#f57c00; }
+    #leaderboard-list { list-style:none; padding:0; margin:0; }
+    #leaderboard-list li { padding:10px; margin-bottom:5px; border-bottom:1px solid #eee; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+
+    /* ✅ 小螢幕微調：避免按鈕擠爆 */
+    @media (max-width:520px){
+      .view { padding:16px; }
+      .question-area { font-size:1.35em; padding:16px; }
+      .answer-buttons button { width:100%; }
+      #pause-overlay h2 { font-size:2.2em; }
+    }
+
+    /* ✅ 平板以上：更舒展 */
+    @media (min-width:900px){
+      .view { max-width:760px; }
+      .question-area { font-size:1.9em; }
+    }
+
+    /* ✅ Footer（你指定的樣式區） */
+    footer{
+      width:100%;
+      margin-top:30px;
+      padding:18px 0 26px;
+    }
+    .footer-pill{
+      max-width:1100px;
+      margin:0 auto;
+      padding:12px 16px;
+      border-radius:999px;
+      background:rgba(255,255,255,.9);
+      border:1px solid rgba(0,0,0,.06);
+      box-shadow:0 10px 24px rgba(0,0,0,.06);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+    .footer-left,.footer-right{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:#374151;
+      font-size:.95em;
+    }
+    .footer-dot{
+      width:10px;height:10px;border-radius:50%;
+      background:#ff9800;
+      box-shadow:0 0 0 6px rgba(255,152,0,.14);
+    }
+    .footer-icon{
+      width:34px;height:34px;border-radius:999px;
+      display:flex;align-items:center;justify-content:center;
+      background:rgba(0,123,255,.10);
+      color:#007bff;
+    }
+    .footer-copy{ font-weight:700; }
+    .footer-tagline{ font-weight:700; white-space:nowrap; }
+
+    @media (max-width:640px){
+      .footer-pill{
+        border-radius:18px;
+        justify-content:center;
+        text-align:center;
+      }
+      .footer-tagline{ white-space:normal; }
+    }
+
+    /* ✅ 新增：更穩的 RWD 比例（只加不改原本規則） */
+    .view{ width:min(760px, 100%); }
+    .question-area{
+      font-size: clamp(1.2rem, 2.2vw, 1.95rem);
+      min-height: clamp(140px, 18vh, 220px);
+    }
+    .answer-buttons button{
+      min-height: clamp(48px, 6vh, 60px);
+    }
+    @media (min-width:768px) and (max-width:1024px){
+      .view{ max-width:740px; }
+      .answer-buttons button{ width:calc(50% - 10px); }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="header">
+    <div class="container navbar">
+      <div class="logo-area">
+        <img src="JESSIEMATH-Q.png" alt="Jessie Math Logo">
+        <h1>Jessie Math</h1>
+      </div>
+      <div class="nav-links">
+        <a href="https://jessiemath0703-chu.github.io/website2/" class="nav-link" target="_blank"><i class="fas fa-home"></i> 首頁</a>
+        <a href="https://jessiemath0703-chu.github.io/Game-Lobby/" class="nav-link" target="_blank"><i class="fas fa-th-large"></i> 遊戲大廳</a>
+        <a href="https://jessiemath0703-chu.github.io/Game-Lobby/#g5-u10" class="nav-link back-button" target="_blank"><i class="fas fa-arrow-left"></i> 五年級扇形</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="game-area container">
+    <div id="start-view" class="view active">
+      <h2>🎯 扇形特訓：角度與幾分之幾</h2>
+      <p><strong>五年級主題十：扇形</strong></p>
+      <p>歡迎來到扇形遊戲，請先輸入您的名字。</p>
+
+      <input type="text" id="player-name" placeholder="請輸入您的姓名" required>
+
+      <div class="game-rules" style="text-align:left; border:1px solid #ccc; padding:15px; border-radius:5px; margin-top:20px;">
+        <h3>📜 遊戲規則說明</h3>
+        <ul>
+          <li><strong>計時機制：</strong> 每回合 60 秒，過程中題目會隨機出題。</li>
+          <li><strong>計分規則：</strong> 答對得分，答錯扣分。</li>
+          <li><strong>時間獎懲：</strong> 答對 +5 秒，答錯 -5 秒。</li>
+          <li><strong>範圍提醒：</strong> 本遊戲只考 <strong>圓心角</strong> 與 <strong>幾分之幾圓</strong>（不考圓周長/弧長）。</li>
+        </ul>
+      </div>
+
+      <button class="btn-primary" onclick="startGame()">開始遊戲 <i class="fas fa-arrow-right"></i></button>
+    </div>
+
+    <div id="level-select-view" class="view">
+      <h2>🎯 選擇關卡</h2>
+      <p>請選擇您想挑戰的扇形主題：</p>
+
+      <div class="level-card" onclick="selectLevel(1)">
+        <h3>第一關：認識扇形</h3>
+        <p>圓心、半徑、弧、扇形邊界（觀念題）。</p>
+      </div>
+
+      <div class="level-card" onclick="selectLevel(2)">
+        <h3>第二關：認識圓心角</h3>
+        <p>圓心角大小判斷、角度比較、角度關係。</p>
+      </div>
+
+      <div class="level-card" onclick="selectLevel(3)">
+        <h3>第三關：幾分之幾圓</h3>
+        <p>幾度 ↔ 幾分之幾（含約分/倍數變化）。</p>
+      </div>
+
+      <button class="btn-secondary" onclick="showLeaderboard()">查看排行榜 <i class="fas fa-trophy"></i></button>
+    </div>
+
+    <div id="game-view" class="view">
+      <div id="difficulty-select" style="margin-bottom:20px;">
+        <h3>🚀 選擇難度</h3>
+        <button class="btn-secondary" onclick="setDifficulty('easy')">簡單 (慢速)</button>
+        <button class="btn-secondary" onclick="setDifficulty('medium')">普通 (中速)</button>
+        <button class="btn-secondary" onclick="setDifficulty('hard')">困難 (快速)</button>
+      </div>
+
+      <div id="game-play-area" style="display:none;">
+        <div class="game-info">
+          <span id="timer-display">計時: <span id="timer">60</span>s</span>
+          <span id="score-display">分數: <span id="score">0</span></span>
+          <span id="combo-display">連擊: <span id="combo">x1</span></span>
+        </div>
+
+        <div class="question-area" id="question-area">
+          <p id="question-text">題目將會顯示在這裡...</p>
+          <div id="question-image"></div>
+        </div>
+
+        <div class="answer-buttons" id="answer-buttons">
+          <button onclick="checkAnswer(0)">選項 A</button>
+          <button onclick="checkAnswer(1)">選項 B</button>
+          <button onclick="checkAnswer(2)">選項 C</button>
+          <button onclick="checkAnswer(3)">選項 D</button>
+        </div>
+
+        <div class="control-buttons">
+          <button class="btn-secondary" onclick="togglePause()"><i class="fas fa-pause"></i> 暫停</button>
+          <button class="btn-primary" onclick="restartGame()"><i class="fas fa-redo"></i> 重新</button>
+          <button class="btn-back" onclick="goToLevelSelect()"><i class="fas fa-times-circle"></i> 回關卡主選單</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="leaderboard-view" class="view">
+      <h2>🏆 排行榜</h2>
+      <p id="leaderboard-info">目前無資料。</p>
+      <ul id="leaderboard-list"></ul>
+      <button class="btn-primary" onclick="goToStart()"><i class="fas fa-arrow-left"></i> 返回</button>
+    </div>
+  </main>
+
+  <div id="pause-overlay">
+    <h2>遊戲暫停中</h2>
+    <button class="btn-primary" onclick="togglePause()"><i class="fas fa-play"></i> 繼續遊戲</button>
+    <button class="btn-back" onclick="goToLevelSelect(true)"><i class="fas fa-times-circle"></i> 結束本局</button>
+  </div>
+
+  <!-- ✅ 你指定要加的 Footer（放在 body 結尾） -->
+  <footer>
+    <div class="footer-pill">
+      <div class="footer-left">
+        <div class="footer-dot" aria-hidden="true"></div>
+        <div class="footer-copy">© 2025–2026 Jessie Math 捷析老師. All rights reserved.</div>
+      </div>
+      <div class="footer-right">
+        <div class="footer-icon" aria-hidden="true"><i class="fas fa-compass"></i></div>
+        <div class="footer-tagline">數學不迷路，Jessie 帶你走向理解。</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    let playerName = '';
+    let currentScore = 0;
+    let timeLeft = 60;
+    let combo = 1;
+    let timerInterval;
+    let isPaused = false;
+    let selectedLevel = 0;
+    let selectedDifficulty = 'easy';
+    let questionData = [];
+    let currentQuestion = {};
+    let leaderboard = JSON.parse(localStorage.getItem('jessieMathLeaderboard') || '[]');
+
+    const views = document.querySelectorAll('.view');
+    const startView = document.getElementById('start-view');
+    const levelSelectView = document.getElementById('level-select-view');
+    const gameView = document.getElementById('game-view');
+    const leaderboardView = document.getElementById('leaderboard-view');
+    const gamePlayArea = document.getElementById('game-play-area');
+    const difficultySelect = document.getElementById('difficulty-select');
+    const pauseOverlay = document.getElementById('pause-overlay');
+
+    function renderMathWhenReady(el, tries = 30) {
+      if (!el) return;
+      if (window.renderMathInElement) {
+        try {
+          window.renderMathInElement(el, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$$', display: false }, /* 保留但不使用 */
+              { left: '\\(', right: '\\)', display: false },
+              { left: '\\[', right: '\\]', display: true }
+            ],
+            throwOnError: false
+          });
+        } catch (e) {}
+        return;
+      }
+      if (tries <= 0) return;
+      setTimeout(() => renderMathWhenReady(el, tries - 1), 100);
+    }
+
+    function switchView(targetView) {
+      views.forEach(v => v.classList.remove('active'));
+      targetView.classList.add('active');
+    }
+
+    function startGame() {
+      playerName = document.getElementById('player-name').value.trim();
+      if (playerName.length < 2) { alert('請輸入至少兩個字元的姓名！'); return; }
+      switchView(levelSelectView);
+    }
+
+    function goToStart() { switchView(startView); }
+
+    function selectLevel(level) {
+      selectedLevel = level;
+      switchView(gameView);
+      difficultySelect.style.display = 'block';
+      gamePlayArea.style.display = 'none';
+    }
+
+    function setDifficulty(difficulty) {
+      selectedDifficulty = difficulty;
+      difficultySelect.style.display = 'none';
+      gamePlayArea.style.display = 'block';
+
+      currentScore = 0;
+      timeLeft = 60;
+      combo = 1;
+      isPaused = false;
+
+      document.getElementById('score').textContent = currentScore;
+      document.getElementById('combo').textContent = `x${combo}`;
+      pauseOverlay.style.display = 'none';
+
+      loadQuestions(selectedLevel);
+      startTimer();
+      generateQuestion();
+    }
+
+    function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+    function shuffle(arr){
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ [a,b]=[b,a%b]; } return a||1; }
+    function simpFrac(n,d){
+      const g=gcd(n,d);
+      n/=g; d/=g;
+      return `${n}/${d}`;
+    }
+
+    function lcm(a,b){ return Math.abs(a*b)/gcd(a,b); }
+    function addFrac(aN,aD,bN,bD){
+      const L = lcm(aD,bD);
+      const n = aN*(L/aD) + bN*(L/bD);
+      return { n, d:L };
+    }
+    function normFrac(n,d){
+      if(d===0) return {n:0,d:1};
+      if(d<0){ n=-n; d=-d; }
+      const g=gcd(n,d);
+      return { n:n/g, d:d/g };
+    }
+
+    function makeFraction(){
+      const dens = [2,3,4,5,6,8,9,10,12,15,16,18,20,24];
+      const d = dens[randInt(0, dens.length-1)];
+      const n = randInt(1, d-1);
+      return {n,d};
+    }
+
+    function angleFromFrac(n,d){ return Math.round(360 * (n/d)); }
+    function angleToFrac(a){
+      const fr = normFrac(a, 360);
+      return simpFrac(fr.n, fr.d);
+    }
+
+    function pickNiceAngle(){
+      const pool = [15,18,20,24,25,30,36,40,45,50,60,72,75,80,90,100,108,120,135,144,150,160,165,180,200,210,216,220,230,240,252,270,288,300,315,320,330,340];
+      return pool[randInt(0,pool.length-1)];
+    }
+
+    function buildDynamicQuestions(level){
+      const qs = [];
+
+      if(level === 1){
+        qs.push(
+          { text:"扇形通常由哪三個部分圍成？", options:["兩條半徑與一段弧","兩條直徑與一段弧","兩條弦與一段弧","兩條切線與一段弧"], answer:0 },
+          { text:"扇形的兩條直邊通常是圓的什麼？", options:["弦","半徑","直徑","圓周"], answer:1 },
+          { text:"下列何者不是扇形一定會有的？", options:["圓心","弧","兩條半徑","兩條直徑"], answer:3 },
+          { text:"把圓切出一塊像披薩的區域，最貼近的名稱是？", options:["扇形","弓形","三角形","長方形"], answer:0 },
+          { text:"扇形邊界中的「彎彎那一段」叫什麼？", options:["弧","弦","直徑","半徑"], answer:0 }
+        );
+
+        const defBank = [
+          {q:"從圓心到圓周的一段線叫什麼？", a:"半徑", ops:["半徑","直徑","弧","弦"]},
+          {q:"通過圓心、連接圓周兩點的線段叫什麼？", a:"直徑", ops:["半徑","直徑","弧","圓心角"]},
+          {q:"連接圓周上兩點，但不一定通過圓心的線段叫什麼？", a:"弦", ops:["弧","弦","半徑","直徑"]},
+          {q:"圓的外圍一整圈（邊界）叫什麼？", a:"圓周", ops:["圓心","圓周","扇形","弓形"]},
+          {q:"扇形中由兩條半徑夾出的角叫什麼？", a:"圓心角", ops:["圓心角","直角","周角","三角形"]},
+        ];
+        shuffle(defBank).slice(0,5).forEach(it=>{
+          const opts = shuffle([...it.ops]);
+          qs.push({ text: it.q, options: opts, answer: opts.indexOf(it.a) });
+        });
+
+        const ynBank = [
+          {q:"由兩條半徑和一段弧圍成的圖形，是扇形嗎？", yes:true},
+          {q:"由兩條直徑和一段弧圍成的圖形，是扇形嗎？", yes:false},
+          {q:"由兩條弦和一段弧圍成的圖形，是扇形嗎？", yes:false},
+          {q:"像披薩切片那樣的圖形，一般稱為扇形嗎？", yes:true},
+          {q:"扇形一定要有兩條直徑，才算扇形嗎？", yes:false},
+          {q:"兩條半徑 + 一段弧 圍成的區域，通常就是扇形嗎？", yes:true},
+        ];
+        shuffle(ynBank).slice(0,5).forEach(it=>{
+          const opts = shuffle(["是","不是","不一定","無法判斷"]);
+          const ans = it.yes ? "是" : "不是";
+          qs.push({ text: it.q, options: opts, answer: opts.indexOf(ans) });
+        });
+
+        const wrongBank = [
+          {
+            text:"下列敘述哪一個是錯的？",
+            options:[
+              "扇形的兩條直邊通常是半徑",
+              "扇形的彎彎邊界叫弧",
+              "扇形一定包含圓心",
+              "扇形一定包含兩條直徑"
+            ],
+            answer:3
+          },
+          {
+            text:"下列哪一個配對是錯的？",
+            options:[
+              "直徑：通過圓心的弦",
+              "半徑：圓心到圓周的線段",
+              "弧：圓周的一部分",
+              "圓周：圓內部的面積"
+            ],
+            answer:3
+          },
+          {
+            text:"下列哪一個說法最正確？",
+            options:[
+              "弧是一條直線",
+              "弦一定通過圓心",
+              "直徑一定通過圓心",
+              "半徑連接圓周兩點"
+            ],
+            answer:2
+          }
+        ];
+        wrongBank.forEach(x=>qs.push(x));
+
+        const scenBank = [
+          {q:"老師在圓上畫一條線，從圓心直直畫到圓周，這條線是？", a:"半徑", ops:["半徑","直徑","弧","弦"]},
+          {q:"你用尺連接圓周上的兩點，但沒特別對準圓心，這條線比較可能是？", a:"弦", ops:["弧","弦","半徑","圓周"]},
+          {q:"你把圓像披薩切一片拿起來，那片區域最像？", a:"扇形", ops:["扇形","弓形","長方形","梯形"]},
+          {q:"圓周上兩點之間沿著圓邊走的那一段路，叫？", a:"弧", ops:["弧","弦","直徑","半徑"]},
+          {q:"一條線段連接圓周兩點且通過圓心，這條線段是？", a:"直徑", ops:["半徑","弦","直徑","弧"]},
+        ];
+        shuffle(scenBank).slice(0,4).forEach(it=>{
+          const opts = shuffle([...it.ops]);
+          qs.push({ text: it.q, options: opts, answer: opts.indexOf(it.a) });
+        });
+
+        for(let k=0;k<10;k++){
+          const r = randInt(2, 20);
+          const d = r * 2;
+          const mode = randInt(1, 4);
+
+          if(mode===1){
+            const opts = shuffle([d, r, d+2, Math.max(1,d-2)]).map(x=>`${x} 公分`);
+            qs.push({
+              text:`某圓的半徑是 ${r} 公分，直徑是多少？`,
+              options: opts,
+              answer: opts.indexOf(`${d} 公分`)
+            });
+          }else if(mode===2){
+            const opts = shuffle([r, d, r+1, Math.max(1,r-1)]).map(x=>`${x} 公分`);
+            qs.push({
+              text:`某圓的直徑是 ${d} 公分，半徑是多少？`,
+              options: opts,
+              answer: opts.indexOf(`${r} 公分`)
+            });
+          }else if(mode===3){
+            const opts = shuffle([
+              "直徑 = 半徑 × 2",
+              "直徑 = 半徑 ÷ 2",
+              "半徑 = 直徑 × 2",
+              "半徑 = 直徑 + 2"
+            ]);
+            qs.push({
+              text:`如果半徑是 ${r} 公分，下列哪個關係一定正確？`,
+              options: opts,
+              answer: opts.indexOf("直徑 = 半徑 × 2")
+            });
+          }else{
+            const opts = shuffle([
+              "半徑是直徑的一半",
+              "半徑比直徑大",
+              "直徑是半徑的一半",
+              "半徑與直徑無關"
+            ]);
+            qs.push({
+              text:`關於半徑與直徑，下列哪句話正確？`,
+              options: opts,
+              answer: opts.indexOf("半徑是直徑的一半")
+            });
+          }
+        }
+
+        const passCenter = [
+          { text:"下列哪一個一定經過圓心？", options:["半徑","弦","直徑","弧"], answerText:"直徑" },
+          { text:"下列哪一個一定從圓心出發？", options:["弧","弦","半徑","圓周"], answerText:"半徑" },
+          { text:"下列哪一個是「圓周上的一段彎彎邊」？", options:["弧","弦","直徑","半徑"], answerText:"弧" }
+        ];
+        passCenter.forEach(it=>{
+          const opts = shuffle([...it.options]);
+          qs.push({ text: it.text, options: opts, answer: opts.indexOf(it.answerText) });
+        });
+
+        const quick = [
+          {q:"「圓心到圓周」=？", a:"半徑", ops:["直徑","半徑","弦","弧"]},
+          {q:"「通過圓心的弦」=？", a:"直徑", ops:["直徑","半徑","圓周","弧"]},
+          {q:"「連接圓周兩點的線段」=？", a:"弦", ops:["弧","弦","直徑","圓周"]},
+        ];
+        quick.forEach(it=>{
+          const opts = shuffle([...it.ops]);
+          qs.push({ text: it.q, options: opts, answer: opts.indexOf(it.a) });
+        });
+
+        const textShapeBank = [
+          {q:"由「兩條半徑」和「一段弧」圍成的區域，最可能是？", a:"扇形", ops:["扇形","三角形","長方形","梯形"]},
+          {q:"由「一條弦」和「一段弧」圍成的區域，通常叫？", a:"弓形", ops:["扇形","弓形","正方形","圓環"]},
+          {q:"扇形的頂點（兩條半徑的交點）在哪裡？", a:"圓心", ops:["圓心","圓周","弧上","任意點"]},
+        ];
+        shuffle(textShapeBank).forEach(it=>{
+          const opts = shuffle([...it.ops]);
+          qs.push({ text: it.q, options: opts, answer: opts.indexOf(it.a) });
+        });
+
+      } else if(level === 2){
+        for(let k=0;k<14;k++){
+          const a = pickNiceAngle();
+          const ans = a < 180 ? 1 : (a===180 ? 2 : 0);
+          qs.push({
+            text:`某扇形的圓心角是 ${a}°，它和半圓（180°）相比是？`,
+            options:["比較大","比較小","一樣大","無法判斷"],
+            answer: ans
+          });
+        }
+
+        for(let k=0;k<12;k++){
+          const a = [15,18,20,24,30,36,45,60,72,90,120,144,150][randInt(0,12)];
+          const b = 360 - a;
+          const opts = shuffle([b, a, 180, 90]).map(x=>`${x}°`);
+          qs.push({
+            text:`全圓是 360°，如果一個扇形圓心角是 ${a}°，剩下那個大扇形的圓心角是？`,
+            options: opts,
+            answer: opts.indexOf(`${b}°`)
+          });
+        }
+
+        for(let k=0;k<10;k++){
+          const a = [15,18,20,24,30,36,45,60,72,90,120][randInt(0,10)];
+          const two = a*2;
+          const half = a/2;
+          const questionType = randInt(1,2);
+          if(questionType===1){
+            const opts = shuffle([two, a, 180, a+30]).map(x=>`${x}°`);
+            qs.push({ text:`甲扇形圓心角是 ${a}°，乙扇形圓心角是甲的 2 倍，乙是多少度？`, options:opts, answer:opts.indexOf(`${two}°`) });
+          }else{
+            const opts = shuffle([half, a, 90, a+15]).map(x=>`${x}°`);
+            qs.push({ text:`甲扇形圓心角是 ${a}°，乙扇形圓心角是甲的一半，乙是多少度？`, options:opts, answer:opts.indexOf(`${half}°`) });
+          }
+        }
+
+        for(let k=0;k<10;k++){
+          const partsPool = [8,9,10,12,15,16,18,20,24];
+          const parts = partsPool[randInt(0, partsPool.length-1)];
+          const each = Math.round(360/parts);
+          const opts = shuffle([each, each+5, Math.max(1,each-5), 180]).map(x=>`${x}°`);
+          qs.push({
+            text:`把一個圓平均分成 ${parts} 等分，每一等分的圓心角是多少度？`,
+            options: opts,
+            answer: opts.indexOf(`${each}°`)
+          });
+        }
+
+        for(let k=0;k<10;k++){
+          const a = [30,45,60,72,90,120,135,144,150][randInt(0,8)];
+          const b = [15,18,20,24,30,36,40,45,60][randInt(0,8)];
+          const mode = randInt(1,2);
+          if(mode===1){
+            const sum = a + b;
+            const opts = shuffle([sum, sum+10, Math.max(0,sum-10), 180]).map(x=>`${x}°`);
+            qs.push({
+              text:`兩個扇形的圓心角分別是 ${a}° 與 ${b}°，合起來的圓心角是多少度？`,
+              options: opts,
+              answer: opts.indexOf(`${sum}°`)
+            });
+          }else{
+            const big = Math.max(a,b), small = Math.min(a,b);
+            const diff = big - small;
+            const opts = shuffle([diff, diff+10, Math.max(0,diff-10), 90]).map(x=>`${x}°`);
+            qs.push({
+              text:`甲扇形圓心角是 ${big}°，乙扇形圓心角是 ${small}°，甲比乙多多少度？`,
+              options: opts,
+              answer: opts.indexOf(`${diff}°`)
+            });
+          }
+        }
+
+        for(let k=0;k<12;k++){
+          const a = [15,30,45,60,72,80,90,110,120,135,150,180][randInt(0,11)];
+          let ansName = "無法判斷";
+          if(a>0 && a<90) ansName="銳角";
+          else if(a===90) ansName="直角";
+          else if(a>90 && a<180) ansName="鈍角";
+          else if(a===180) ansName="平角";
+
+          const opts = shuffle(["銳角","直角","鈍角","平角"]);
+          if(a===180 && !opts.includes("平角")) opts[randInt(0,3)] = "平角";
+          qs.push({
+            text:`圓心角 ${a}° 屬於下列哪一種角？`,
+            options: opts,
+            answer: opts.indexOf(ansName)
+          });
+        }
+
+      } else if(level === 3){
+        for(let k=0;k<18;k++){
+          const {n,d} = makeFraction();
+          const a = angleFromFrac(n,d);
+          const correct = `${a}°`;
+
+          const n2 = Math.min(d-1, n+1);
+          const n3 = Math.max(1, n-1);
+          const a2 = angleFromFrac(n2,d);
+          const a3 = angleFromFrac(n3,d);
+          const a4 = pickNiceAngle();
+
+          const opts = shuffle([a, a2, a3, a4]).map(x=>`${x}°`);
+          qs.push({
+            text:`全圓是 360°，如果扇形占全圓的 ${simpFrac(n,d)}，它的圓心角是多少度？`,
+            options: opts,
+            answer: opts.indexOf(correct)
+          });
+        }
+
+        for(let k=0;k<18;k++){
+          const d = [2,3,4,5,6,8,9,10,12,15,16,18,20,24][randInt(0,13)];
+          const n = randInt(1, d-1);
+          const a = angleFromFrac(n,d);
+          const correct = simpFrac(n,d);
+
+          const wrong1 = simpFrac(Math.min(d-1,n+1), d);
+          const wrong2 = simpFrac(Math.max(1,n-1), d);
+          const wrong3 = (correct === "1/2") ? "1/4" : "1/2";
+
+          const opts = shuffle([correct, wrong1, wrong2, wrong3]);
+          qs.push({
+            text:`圓心角是 ${a}° 的扇形，占全圓的幾分之幾？`,
+            options: opts,
+            answer: opts.indexOf(correct)
+          });
+        }
+
+        for(let k=0;k<14;k++){
+          const f1 = makeFraction();
+          const f2 = makeFraction();
+          const a1 = angleFromFrac(f1.n,f1.d);
+          const a2 = angleFromFrac(f2.n,f2.d);
+
+          const bigger = a1 > a2 ? "甲" : (a2 > a1 ? "乙" : "一樣大");
+          const opts = shuffle(["甲","乙","一樣大","無法判斷"]);
+          qs.push({
+            text:`甲扇形是 ${simpFrac(f1.n,f1.d)} 圓，乙扇形是 ${simpFrac(f2.n,f2.d)} 圓，哪個圓心角比較大？`,
+            options: opts,
+            answer: opts.indexOf(bigger)
+          });
+        }
+
+        for(let k=0;k<12;k++){
+          const d = [4,5,6,8,10,12,15,16,18,20][randInt(0,9)];
+          const n = randInt(1, d-1);
+          const left = simpFrac(n,d);
+          const rest = simpFrac(d-n, d);
+          const opts = shuffle([rest, left, "1/2", "1/4"]);
+          qs.push({
+            text:`一個扇形占全圓的 ${left}，那剩下的部分占全圓的幾分之幾？`,
+            options: opts,
+            answer: opts.indexOf(rest)
+          });
+        }
+
+        for(let k=0;k<14;k++){
+          const a = pickNiceAngle();
+          const restA = 360 - a;
+          const correct = angleToFrac(restA);
+          const wrong1 = angleToFrac(a);
+          const wrong2 = angleToFrac(Math.max(0, restA - 30));
+          const wrong3 = "1/2";
+          const opts = shuffle([correct, wrong1, wrong2, wrong3]);
+          qs.push({
+            text:`一個扇形的圓心角是 ${a}°，剩下的部分占全圓的幾分之幾？`,
+            options: opts,
+            answer: opts.indexOf(correct)
+          });
+        }
+
+        for(let k=0;k<12;k++){
+          const partsPool = [8,9,10,12,15,16,18,20,24];
+          const parts = partsPool[randInt(0, partsPool.length-1)];
+          const take = randInt(1, Math.min(parts-1, 6));
+          const frac = simpFrac(take, parts);
+          const angle = Math.round(360 * take / parts);
+
+          const mode = randInt(1,2);
+          if(mode===1){
+            const opts = shuffle([`${angle}°`, `${Math.max(0,angle-18)}°`, `${angle+18}°`, `180°`]);
+            qs.push({
+              text:`把圓平均分成 ${parts} 等分，取其中 ${take} 等分（${frac} 圓），圓心角是多少度？`,
+              options: opts,
+              answer: opts.indexOf(`${angle}°`)
+            });
+          }else{
+            const correct = frac;
+            const wrong1 = simpFrac(Math.min(parts-1,take+1), parts);
+            const wrong2 = simpFrac(Math.max(1,take-1), parts);
+            const wrong3 = "1/2";
+            const opts = shuffle([correct, wrong1, wrong2, wrong3]);
+            qs.push({
+              text:`把圓平均分成 ${parts} 等分，取其中 ${take} 等分，占全圓的幾分之幾？`,
+              options: opts,
+              answer: opts.indexOf(correct)
+            });
+          }
+        }
+
+        for(let k=0;k<10;k++){
+          const aParts = [8,10,12,15,16][randInt(0,4)];
+          const bParts = [6,8,9,10,12][randInt(0,4)];
+          const aTake = randInt(1, Math.min(4, aParts-1));
+          const bTake = randInt(1, Math.min(4, bParts-1));
+          const A = normFrac(aTake, aParts);
+          const B = normFrac(bTake, bParts);
+          const Sraw = addFrac(A.n,A.d,B.n,B.d);
+          const S = normFrac(Sraw.n, Sraw.d);
+          const Stext = simpFrac(S.n,S.d);
+          const angle = Math.round(360 * (S.n/S.d));
+
+          const mode = randInt(1,2);
+          if(mode===1){
+            const opts = shuffle([`${angle}°`, `${Math.max(0,angle-18)}°`, `${angle+18}°`, `180°`]);
+            qs.push({
+              text:`一個蛋糕先切成 ${aParts} 等分，吃了 ${aTake} 份；又切成 ${bParts} 等分的另一個蛋糕，吃了 ${bTake} 份。合計約占「一個全圓」的 ${Stext}，相當於多少度？`,
+              options: opts,
+              answer: opts.indexOf(`${angle}°`)
+            });
+          }else{
+            const correct = Stext;
+            const wrong1 = simpFrac(A.n,A.d);
+            const wrong2 = simpFrac(B.n,B.d);
+            const wrong3 = "1/2";
+            const opts = shuffle([correct, wrong1, wrong2, wrong3]);
+            qs.push({
+              text:`一個蛋糕切成 ${aParts} 等分，吃了 ${aTake} 份；另一個切成 ${bParts} 等分，吃了 ${bTake} 份。把兩次「占全圓的分數」相加，合計是幾分之幾圓？`,
+              options: opts,
+              answer: opts.indexOf(correct)
+            });
+          }
+        }
+
+        const classicAngles = [210,220,288,300,315,270,240,144,72,30,45,18];
+        shuffle(classicAngles).slice(0,10).forEach(a=>{
+          const correct = angleToFrac(a);
+          const wrong1 = angleToFrac(360-a);
+          const wrong2 = angleToFrac(Math.max(0,a-30));
+          const wrong3 = "1/2";
+          const opts = shuffle([correct, wrong1, wrong2, wrong3]);
+          qs.push({
+            text:`圓心角是 ${a}° 的扇形，占全圓的幾分之幾？`,
+            options: opts,
+            answer: opts.indexOf(correct)
+          });
+        });
+      }
+
+      return qs;
+    }
+
+    function loadQuestions(level) {
+      questionData = buildDynamicQuestions(level);
+      // ✅ 題目隨機：每次出題都隨機抽（這裡保留 shuffle 當作混洗底牌）
+      shuffle(questionData);
+    }
+
+    function generateQuestion() {
+      if (questionData.length === 0) {
+        document.getElementById('question-text').textContent = "本關題目已出完，請等待分數結算...";
+        clearInterval(timerInterval);
+        setTimeout(gameOver, 2000);
+        return;
+      }
+
+      // ✅ 題目隨機：不再固定 shift，改成「每題都隨機抽一題」
+      const pickIndex = randInt(0, questionData.length - 1);
+      currentQuestion = questionData.splice(pickIndex, 1)[0];
+
+      document.getElementById('question-text').innerHTML = currentQuestion.text;
+
+      const answerButtons = document.querySelectorAll('.answer-buttons button');
+      currentQuestion.options.forEach((opt, idx) => {
+        answerButtons[idx].innerHTML = opt;
+      });
+
+      renderMathWhenReady(document.getElementById('question-area'));
+      renderMathWhenReady(document.getElementById('answer-buttons'));
+    }
+
+    function checkAnswer(selectedIndex) {
+      if (isPaused) return;
+      if (!currentQuestion.options || selectedIndex >= currentQuestion.options.length) return;
+
+      const isCorrect = (selectedIndex === currentQuestion.answer);
+      const feedbackElement = document.createElement('div');
+
+      if (isCorrect) {
+        const baseScore = 10;
+        currentScore += baseScore * combo;
+        combo++;
+        timeLeft += 5;
+        feedbackElement.innerHTML = `✅ 答對了！+${baseScore * (combo - 1)} 分, +5 秒！`;
+        feedbackElement.style.color = 'green';
+      } else {
+        const penalty = 5;
+        currentScore = Math.max(0, currentScore - penalty);
+        combo = 1;
+        timeLeft = Math.max(0, timeLeft - 5);
+        const correctAnswerText = currentQuestion.options[currentQuestion.answer];
+        feedbackElement.innerHTML = `❌ 答錯了！正確答案是 ${correctAnswerText}。 -${penalty} 分, -5 秒！`;
+        feedbackElement.style.color = 'red';
+      }
+
+      document.getElementById('score').textContent = currentScore;
+      document.getElementById('combo').textContent = `x${combo}`;
+      document.getElementById('timer').textContent = timeLeft;
+
+      gamePlayArea.prepend(feedbackElement);
+      renderMathWhenReady(feedbackElement);
+
+      setTimeout(() => feedbackElement.remove(), 1500);
+      generateQuestion();
+    }
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        if (!isPaused && timeLeft > 0) {
+          timeLeft--;
+          document.getElementById('timer').textContent = timeLeft;
+        } else if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          gameOver();
+        }
+      }, 1000);
+    }
+
+    function gameOver() {
+      addToLeaderboard(playerName, currentScore, selectedLevel, selectedDifficulty);
+      alert(`遊戲結束！您的分數是 ${currentScore} 分。\n星等：${calculateStars(currentScore)}`);
+      showLeaderboard();
+    }
+
+    function togglePause() {
+      isPaused = !isPaused;
+      const pauseButton = document.querySelector('.control-buttons .btn-secondary');
+      if (isPaused) {
+        pauseOverlay.style.display = 'flex';
+        pauseButton.innerHTML = '<i class="fas fa-play"></i> 繼續';
+      } else {
+        pauseOverlay.style.display = 'none';
+        pauseButton.innerHTML = '<i class="fas fa-pause"></i> 暫停';
+      }
+    }
+
+    function restartGame() {
+      if (!confirm('確定要重新開始本局嗎？分數和計時將歸零！')) return;
+      setDifficulty(selectedDifficulty);
+    }
+
+    function goToLevelSelect(isForfeit = false) {
+      clearInterval(timerInterval);
+      isPaused = false;
+      pauseOverlay.style.display = 'none';
+      if (isForfeit || timeLeft > 0) alert('本局已結束，分數不計入排行榜。');
+      switchView(levelSelectView);
+    }
+
+    function calculateStars(score) {
+      if (score >= 200) return '★★★';
+      if (score >= 100) return '★★';
+      if (score > 0) return '★';
+      return '☆☆☆';
+    }
+
+    function addToLeaderboard(name, score, level, difficulty) {
+      const date = new Date().toLocaleString();
+      const stars = calculateStars(score);
+      leaderboard.push({ name, score, level, difficulty, date, stars });
+      leaderboard.sort((a, b) => b.score - a.score);
+      leaderboard = leaderboard.slice(0, 10);
+      localStorage.setItem('jessieMathLeaderboard', JSON.stringify(leaderboard));
+    }
+
+    function showLeaderboard() {
+      switchView(leaderboardView);
+      const list = document.getElementById('leaderboard-list');
+      list.innerHTML = '';
+
+      if (leaderboard.length === 0) {
+        document.getElementById('leaderboard-info').textContent = '目前尚無玩家成績。';
+        return;
+      }
+      document.getElementById('leaderboard-info').textContent = '恭喜這些優秀的挑戰者！';
+
+      leaderboard.forEach((r, idx) => {
+        const levelName = ['未選', '認識扇形', '認識圓心角', '幾分之幾圓'][r.level] || '未知關卡';
+        const difficultyName = { easy:'簡單', medium:'普通', hard:'困難' }[r.difficulty] || '未知難度';
+        const li = document.createElement('li');
+        li.innerHTML = `#${idx + 1} <strong>${r.name}</strong> (${r.stars}) <span>${r.score} 分 - ${levelName} (${difficultyName})</span>`;
+        list.appendChild(li);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      switchView(startView);
+      renderMathWhenReady(document.body);
+    });
+  </script>
+</body>
+</html>
+
